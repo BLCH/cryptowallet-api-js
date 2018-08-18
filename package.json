@@ -1,0 +1,45 @@
+{
+  "name": "CryptoWalletAPI",
+  "version": "0.1.0",
+  "description": "REST API for Crypto Wallet",
+  "main": "src/APIManager.js",
+  "files": [
+    "src/",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BLCH/cryptowallet-api-js"
+  },
+  "keywords": [
+    "rest",
+    "restapi",
+    "cryptowallet",
+    "wallet",
+    "axios",
+    "test",
+    "testing",
+    "mock",
+    "mocking"
+  ],
+  "author": "Andrey Sushenkov",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/BLCH/cryptowallet-api-js/issues"
+  },
+  "homepage": "https://github.com/BLCH/cryptowallet-api-js#readme",
+  "peerDependencies": {
+    "axios": ">= 0.18.0"
+  },
+  "devDependencies": {
+    "axios": "^0.18.0",
+    "debug": "3.1.0",
+    "follow-redirects": "1.5.5",
+    "is-buffer": "1.1.6",
+    "ms": "2.0.0"
+
+
+  }
+}
