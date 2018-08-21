@@ -1,9 +1,12 @@
 // Copyright [2018] [Sushenkov Andrey]
 // http://www.apache.org/licenses/LICENSE-2.0
+'use strict';
 
-import axios from '../node_modules/axios/index'
+var axios = require('axios/index');
 
-export default class APIManager {
+exports = module.exports = APIManager;
+
+class APIManager {
     constructor(baseURL, language, projectId){
         this.projectId = projectId;
         this.axiosInstance = axios.create({
