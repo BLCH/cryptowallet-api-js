@@ -5,33 +5,23 @@ import axios from '../node_modules/axios/index'
 
 export default class APIManager {
     constructor(baseURL, language, projectId){
-        this.baseURL = baseURL;
-        this.contentType = 'application/json';
-        this.language = language;
-        this.token = '';
         this.projectId = projectId;
+        this.axiosInstance = axios.create({
+            baseURL: baseURL,
+            headers: {
+                'accept': 'application/json',
+                'Content-Type':  'application/json',
+                'Accept-Language': language,
+            }
+        })
     }
 
     /**
-     * @description Default data in headers in querys of API methods
-     * @return {{headers: {accept: string, "Content-Type": string, "Accept-Language": string, Authorization: string}}}
-     */
-    setDefaultHeaders = () => {
-        return {
-            headers: {
-                'accept': `${this.contentType}`,
-                'Content-Type':  `${this.contentType}`,
-                'Accept-Language': `${this.language}`,
-                'Authorization': `Bearer ${this.token}`
-            }}
-    };
-
-    /**
-     * @description Set token as property of APIManager object
+     * @description Set token in header Authorization for axiosInstance
      * @param {string} token
      */
     setToken(token){
-        this.token = token;
+        this.axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`
     }
 
     /**
@@ -44,12 +34,9 @@ export default class APIManager {
         try {
             const data = { email, password, project: this.projectId };
 
-            let response = await axios.post(
-              `${this.baseURL}/api/v1/auth/base-login`,
-              data,
-              this.setDefaultHeaders());
+            let response = await this.axiosInstance.post('/auth/base-login', data);
 
-            this.token  = response.data.token;
+            this.setToken(response.data.token);
 
             return response;
 
@@ -72,12 +59,9 @@ export default class APIManager {
         try {
             const formData = { email, password, project: this.projectId };
 
-            let response = await axios.post(
-              `${this.baseURL}/api/v1/auth/register`,
-              formData,
-              this.setDefaultHeaders());
+            let response = await this.axiosInstance.post('/auth/register', formData);
 
-            this.token  = response.data.token;
+            this.setToken(response.data.token);
 
             return response;
 
@@ -96,12 +80,9 @@ export default class APIManager {
      */
     recoveryPasswordStepOne = async (email) => {
         try {
-            const data = { email: email, project: this.projectId };
+            const data = { email, project: this.projectId };
 
-            let response = await axios.post(
-              `${this.baseURL}/api/v1/auth/forgot/step-one`,
-              data,
-              this.setDefaultHeaders());
+            let response = await this.axiosInstance.post('/auth/forgot/step-one', data);
 
             return response;
             // return true; // поменять в проде
@@ -122,12 +103,9 @@ export default class APIManager {
      */
     recoveryPasswordStepTwo = async (code, password) => {
         try {
-            const formData = { code: code, password: password };
+            const data = { code, password };
 
-            let response = await axios.post(
-              `${this.baseURL}/api/v1/auth/forgot/step-two`,
-              formData,
-              this.setDefaultHeaders());
+            let response = await this.axiosInstance.post('/auth/forgot/step-two', data);
 
             return response.status;
 
@@ -159,10 +137,7 @@ export default class APIManager {
      */
     getAllState = async () => {
         try {
-
-            const response = await axios.get(
-              `${this.baseURL}/api/v1/user/all-state`,
-              this.setDefaultHeaders());
+            const response = await this.axiosInstance.get(`/user/all-state`);
             // console.log(response.data);
             return response.data;
 
@@ -181,11 +156,7 @@ export default class APIManager {
      */
     generateNewWalletAddress = async (walletAccountId) => {
         try {
-
-            await axios.post(
-              `${this.baseURL}/api/v1/wallet/generate`,
-              {walletAccountId: walletAccountId},
-              this.setDefaultHeaders());
+            await this.axiosInstance.post('/wallet/generate', {walletAccountId});
 
             return true;
 
@@ -204,11 +175,7 @@ export default class APIManager {
      */
     openOrCloseWallet = async (accountTypeId) => {
         try {
-
-            await axios.post(
-              `${this.baseURL}/api/v1/wallet/open-or-close`,
-              {accountTypeId},
-              this.setDefaultHeaders());
+            await this.axiosInstance.post('/wallet/open-or-close', {accountTypeId});
 
             return true;
 
@@ -222,18 +189,15 @@ export default class APIManager {
 
     /**
      * @description Sending user data and get SMS code for verification
-     * @param {string} number - phone number
      * @param {string} name - user name
+     * @param {string} phone - user phone number
      * @return {Promise<boolean>}
      */
-    verifyPhoneNumberStepOne = async (name, number) => {
+    verifyPhoneNumberStepOne = async (name, phone) => {
         try {
-            const data = {name: name, phone: number};
+            const data = { name, phone };
 
-            const response = await axios.post(
-              `${this.baseURL}/api/v1/account/phone-validate/step-one`,
-              data,
-              this.setDefaultHeaders());
+            const response = await this.axiosInstance.post('/account/phone-validate/step-one', data);
 
             return response; // Пока для тестов отправляем код
 
@@ -255,10 +219,7 @@ export default class APIManager {
      */
     verifyPhoneNumberStepTwo = async (code) => {
         try {
-            await axios.post(
-              `${this.baseURL}/api/v1/account/phone-validate/step-two`,
-              {code: code},
-              this.setDefaultHeaders());
+            await this.axiosInstance.post('/account/phone-validate/step-two', {code: code});
 
             return true;
 
@@ -283,10 +244,8 @@ export default class APIManager {
     subscribeOnPushNotifications = async (type, device_id, token, model, os, os_version) => {
         try {
             let data = { type, device_id, token, model, os, os_version };
-            await axios.post(
-              `${this.baseURL}/api/v1/account/push`,
-              data,
-              this.setDefaultHeaders());
+
+            await this.axiosInstance.post('/account/push', data);
 
             return true;
 
@@ -303,22 +262,18 @@ export default class APIManager {
      * @param phones [ { "name": "Test" "number": "7912312312" } ]
      * @return {Promise<boolean>}
      */
-     updatePhonesContacts = async (phones) => {
-         try {
+    updatePhonesContacts = async (phones) => {
+        try {
+            await this.axiosInstance.post('/account/update-phones', {phones: phones});
 
-             await axios.post(
-               `${this.baseURL}/api/v1/account/update-phones`,
-               {phones: phones},
-               this.setDefaultHeaders());
+            return true;
 
-             return true;
+        } catch (e) {
 
-         } catch (e) {
+            console.warn(e.response);
 
-             console.warn(e.response);
-
-             return false;
-         }
+            return false;
+        }
     };
 
     /**
@@ -331,13 +286,9 @@ export default class APIManager {
      */
     sendTokensStepOne = async (accountId, by, amount, address) => {
         try {
-
             let data = { accountId, by, amount, address };
 
-            const response = await axios.post(
-              `${this.baseURL}/api/v1/wallet/send/step-one`,
-              data,
-              this.setDefaultHeaders());
+            const response = await this.axiosInstance.post('/wallet/send/step-one', data);
 
             return response.data;
 
@@ -357,11 +308,9 @@ export default class APIManager {
      */
     sendTokensStepTwo = async (sendMoneyId, commission) => {
         try {
+            let data = { sendMoneyId, commission };
 
-            await axios.post(
-              `${this.baseURL}/api/v1/wallet/send/step-two`,
-              {sendMoneyId, commission},
-              this.setDefaultHeaders());
+            await this.axiosInstance.post('/wallet/send/step-two', data);
 
             return true;
 
