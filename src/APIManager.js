@@ -4,9 +4,7 @@
 
 var axios = require('axios/index');
 
-exports = module.exports = APIManager;
-
-class APIManager {
+export class APIManager {
     constructor(baseURL, language, projectId){
         this.projectId = projectId;
         this.axiosInstance = axios.create({
@@ -56,7 +54,7 @@ class APIManager {
      * @description User registration and getting token of session if query is success
      * @param {string} email
      * @param {string} password
-     * @return {Promise<*>}
+     * @return {Promise<object>}
      */
     register = async (email, password) => {
         try {
@@ -121,7 +119,7 @@ class APIManager {
     };
 
     /**
-     * @description LogOut user
+     * @description clear token
      * @returns {Promise<boolean>}
      */
     logOut = async () => {
@@ -325,3 +323,5 @@ class APIManager {
         }
     };
 }
+
+module.exports = APIManager;
