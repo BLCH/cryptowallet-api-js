@@ -1,17 +1,16 @@
 {
-  "name": "CryptoWalletAPI",
+  "name": "crypto-wallet-api",
   "version": "0.1.0",
-  "description": "REST API for Crypto Wallet",
+  "description": "REST API for Crypto Wallet BLC ltd.",
   "main": "src/APIManager.js",
+  "private": true,
   "files": [
     "src/",
-    "README.md",
-    "LICENSE",
-    "CHANGELOG.md"
+    "index.js"
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/BLCH/cryptowallet-api-js"
+    "url": "https://github.com/BLCH/cryptowallet-api-js"
   },
   "scripts": {
     "test": "mocha"
@@ -33,11 +32,9 @@
     "url": "https://github.com/BLCH/cryptowallet-api-js/issues"
   },
   "homepage": "https://github.com/BLCH/cryptowallet-api-js#readme",
-  "peerDependencies": {
-    "axios": ">= 0.18.0"
-  },
   "devDependencies": {
     "axios": "^0.18.0",
-    "mocha": "^5.2.0"
+    "mocha": "^5.2.0",
+    "chai": "^4.1.2"
   }
 }
